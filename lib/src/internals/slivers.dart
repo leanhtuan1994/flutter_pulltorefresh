@@ -318,8 +318,8 @@ class SliverLoading extends SingleChildRenderObjectWidget {
   }) : super(key: key, child: child);
 
   @override
-  situation createRenderObject(BuildContext context) {
-    return situation(
+  RenderSliverLoading createRenderObject(BuildContext context) {
+    return RenderSliverLoading(
         hideWhenNotFull: hideWhenNotFull,
         mode: mode,
         hasLayoutExtent: floating,
@@ -329,7 +329,7 @@ class SliverLoading extends SingleChildRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant situation renderObject) {
+      BuildContext context, covariant RenderSliverLoading renderObject) {
     renderObject
       ..mode = mode
       ..hasLayoutExtent = floating!
@@ -339,8 +339,8 @@ class SliverLoading extends SingleChildRenderObjectWidget {
   }
 }
 
-class situation extends RenderSliverSingleBoxAdapter {
-  situation({
+class RenderSliverLoading extends RenderSliverSingleBoxAdapter {
+  RenderSliverLoading({
     RenderBox? child,
     this.mode,
     double? layoutExtent,

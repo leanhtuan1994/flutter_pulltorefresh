@@ -1,9 +1,3 @@
-/*
- * Author: Jpeng
- * Email: peng8350@gmail.com
- * Time:  2019-08-02 19:20
- */
-
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;

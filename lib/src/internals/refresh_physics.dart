@@ -80,7 +80,6 @@ class RefreshPhysics extends ScrollPhysics {
 
   @override
   bool shouldAcceptUserOffset(ScrollMetrics position) {
-    // TODO: implement shouldAcceptUserOffset
     if (parent is NeverScrollableScrollPhysics) {
       return false;
     }
@@ -92,7 +91,6 @@ class RefreshPhysics extends ScrollPhysics {
   // will lead to whether the newPhysics should replace oldPhysics,If flutter can provide a method such as "shouldUpdate",
   // It can work perfectly.
   @override
-  // TODO: implement runtimeType
   Type get runtimeType {
     if (updateFlag == 0) {
       return RefreshPhysics;
@@ -101,11 +99,17 @@ class RefreshPhysics extends ScrollPhysics {
     }
   }
 
+  BuildContext? get storageContext {
+    ScrollContext? context = controller!.position?.context;
+    if (context == null || (context is State && !(context as State).mounted)) {
+      return null;
+    }
+    return context.storageContext;
+  }
+
   @override
   double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
-    // TODO: implement applyPhysicsToUserOffset
-    viewportRender ??=
-        findViewport(controller!.position?.context.storageContext);
+    viewportRender ??= findViewport(storageContext);
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
       if (offset > 0.0) {
         return parent!.applyPhysicsToUserOffset(position, offset);
@@ -113,7 +117,7 @@ class RefreshPhysics extends ScrollPhysics {
     } else {
       if ((offset > 0.0 &&
               viewportRender?.firstChild is! RenderSliverRefresh) ||
-          (offset < 0 && viewportRender?.lastChild is! situation)) {
+          (offset < 0 && viewportRender?.lastChild is! RenderSliverLoading)) {
         return parent!.applyPhysicsToUserOffset(position, offset);
       }
     }
@@ -164,14 +168,14 @@ class RefreshPhysics extends ScrollPhysics {
   @override
   double applyBoundaryConditions(ScrollMetrics position, double value) {
     final ScrollPosition scrollPosition = position as ScrollPosition;
-    viewportRender ??=
-        findViewport(controller!.position?.context.storageContext);
+    viewportRender ??= findViewport(storageContext);
     bool notFull = position.minScrollExtent == position.maxScrollExtent;
     final bool enablePullDown = viewportRender == null
         ? false
         : viewportRender!.firstChild is RenderSliverRefresh;
-    final bool enablePullUp =
-        viewportRender == null ? false : viewportRender!.lastChild is situation;
+    final bool enablePullUp = viewportRender == null
+        ? false
+        : viewportRender!.lastChild is RenderSliverLoading;
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
       if (position.pixels - value > 0.0) {
         return parent!.applyBoundaryConditions(position, value);
@@ -192,7 +196,8 @@ class RefreshPhysics extends ScrollPhysics {
           : sliverHeader.refreshIndicatorLayoutExtent;
     }
     if (enablePullUp) {
-      final situation? sliverFooter = viewportRender!.lastChild as situation?;
+      final RenderSliverLoading? sliverFooter =
+          viewportRender!.lastChild as RenderSliverLoading?;
       bottomExtra = (!notFull && sliverFooter!.geometry!.scrollExtent != 0) ||
               (notFull &&
                   controller!.footerStatus == LoadStatus.noMore &&
@@ -256,14 +261,14 @@ class RefreshPhysics extends ScrollPhysics {
   Simulation? createBallisticSimulation(
       ScrollMetrics position, double velocity) {
     // TODO: implement createBallisticSimulation
-    viewportRender ??=
-        findViewport(controller!.position?.context.storageContext);
+    viewportRender ??= findViewport(storageContext);
 
     final bool enablePullDown = viewportRender == null
         ? false
         : viewportRender!.firstChild is RenderSliverRefresh;
-    final bool enablePullUp =
-        viewportRender == null ? false : viewportRender!.lastChild is situation;
+    final bool enablePullUp = viewportRender == null
+        ? false
+        : viewportRender!.lastChild is RenderSliverLoading;
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
       if (velocity < 0.0) {
         return parent!.createBallisticSimulation(position, velocity);

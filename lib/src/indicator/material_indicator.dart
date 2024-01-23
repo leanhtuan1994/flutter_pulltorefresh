@@ -1,9 +1,3 @@
-/*
- * Author: Jpeng
- * Email: peng8350@gmail.com
- * Time: 2019/5/19 下午9:23
- */
-
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
 import '../internals/indicator_wrap.dart';

@@ -55,75 +55,6 @@ abstract class LoadIndicator extends StatefulWidget {
   }) : super(key: key);
 }
 
-/// Internal Implementation of Head Indicator
-///
-/// you can extends RefreshIndicatorState for custom header,if you want to active complex animation effect
-///
-/// here is the most simple example
-///
-/// ```dart
-///
-/// class RunningHeaderState extends RefreshIndicatorState<RunningHeader>
-///    with TickerProviderStateMixin {
-///  AnimationController _scaleAnimation;
-///  AnimationController _offsetController;
-///  Tween<Offset> offsetTween;
-///
-///  @override
-///  void initState() {
-///    // TODO: implement initState
-///    _scaleAnimation = AnimationController(vsync: this);
-///    _offsetController = AnimationController(
-///        vsync: this, duration: Duration(milliseconds: 1000));
-///    offsetTween = Tween(end: Offset(0.6, 0.0), begin: Offset(0.0, 0.0));
-///    super.initState();
-///  }
-///
-///  @override
-///  void onOffsetChange(double offset) {
-///    // TODO: implement onOffsetChange
-///    if (!floating) {
-///      _scaleAnimation.value = offset / 80.0;
-///    }
-///    super.onOffsetChange(offset);
-///  }
-///
-///  @override
-///  void resetValue() {
-///    // TODO: implement handleModeChange
-///    _scaleAnimation.value = 0.0;
-///    _offsetController.value = 0.0;
-///  }
-///
-///  @override
-///  void dispose() {
-///    // TODO: implement dispose
-///    _scaleAnimation.dispose();
-///    _offsetController.dispose();
-///    super.dispose();
-///  }
-///
-///  @override
-///  Future<void> endRefresh() {
-///    // TODO: implement endRefresh
-///    return _offsetController.animateTo(1.0).whenComplete(() {});
-///  }
-///
-///  @override
-/// Widget buildContent(BuildContext context, RefreshStatus mode) {
-///    // TODO: implement buildContent
-///    return SlideTransition(
-///      child: ScaleTransition(
-///        child: (mode != RefreshStatus.idle || mode != RefreshStatus.canRefresh)
-///            ? Image.asset("images/custom_2.gif")
-///            : Image.asset("images/custom_1.jpg"),
-///        scale: _scaleAnimation,
-///      ),
-///      position: offsetTween.animate(_offsetController),
-///    );
-///  }
-/// }
-/// ```
 abstract class RefreshIndicatorState<T extends RefreshIndicator>
     extends State<T>
     with IndicatorStateMixin<T, RefreshStatus>, RefreshProcessor {
@@ -144,7 +75,6 @@ abstract class RefreshIndicatorState<T extends RefreshIndicator>
 
   @override
   void _handleOffsetChange() {
-    // TODO: implement _handleOffsetChange
     super._handleOffsetChange();
     final double overscrollPast = _calculateScrollOffset();
     onOffsetChange(overscrollPast);
@@ -369,7 +299,6 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
 
   @override
   Future endLoading() {
-    // TODO: implement endLoading
     return Future.delayed(Duration(milliseconds: 0));
   }
 
@@ -382,7 +311,7 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
         return;
       }
 
-      // this line for patch bug temporary:indicator disappears fastly when load more complete
+      // this line for patch bug temporary:indicator disappears fast when load more complete
       if (mounted) Scrollable.of(context).position.correctBy(0.00001);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _position?.outOfRange == true) {
@@ -452,7 +381,8 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
         floating = true;
       }
     } else {
-      if (activity is! DragScrollActivity) _enableLoading = false;
+      if (activity is! DragScrollActivity && activity is! IdleScrollActivity)
+        _enableLoading = false;
     }
     _lastMode = mode;
     onModeChange(mode);
@@ -462,14 +392,19 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
     if (!mounted || _isHide || LoadStatus.loading == mode || floating) {
       return;
     }
-    if (activity is DragScrollActivity) {
+
+    if (activity is IdleScrollActivity) {
+      _enableLoading = true;
+    }
+
+    if (activity is DragScrollActivity || activity is IdleScrollActivity) {
       if (_checkIfCanLoading()) {
         mode = LoadStatus.canLoading;
       } else {
         mode = _lastMode;
       }
     }
-    if (activity is BallisticScrollActivity) {
+    if (activity is BallisticScrollActivity || activity is IdleScrollActivity) {
       if (configuration!.enableBallisticLoad) {
         if (_checkIfCanLoading()) enterLoading();
       } else if (mode == LoadStatus.canLoading) {
@@ -502,7 +437,9 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
         }
       }
     } else {
-      if (activity is DragScrollActivity || activity is DrivenScrollActivity) {
+      if (activity is DragScrollActivity ||
+          activity is DrivenScrollActivity ||
+          activity is IdleScrollActivity) {
         _enableLoading = true;
       }
     }
@@ -516,21 +453,18 @@ abstract class LoadIndicatorState<T extends LoadIndicator> extends State<T>
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     _lastMode = mode;
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _position?.isScrollingNotifier.removeListener(_listenScrollEnd);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return SliverLoading(
         hideWhenNotFull: configuration!.hideFooterWhenNotFull,
         floating: widget.loadStyle == LoadStyle.ShowAlways
@@ -584,7 +518,7 @@ mixin IndicatorStateMixin<T extends StatefulWidget, V> on State<T> {
 
   ScrollActivity? get activity => _position!.activity;
 
-  // it doesn't support get the ScrollController as the listener, because it will cause "multiple scrollview use one ScrollController"
+  // it doesn't support get the ScrollController as the listener, because it will cause "multiple scroll view use one ScrollController"
   // error,only replace the ScrollPosition to listen the offset
   ScrollPosition? _position;
 
@@ -634,7 +568,6 @@ mixin IndicatorStateMixin<T extends StatefulWidget, V> on State<T> {
 
   @override
   void initState() {
-    // TODO: implement initState
     if (V == RefreshStatus) {
       SmartRefresher.of(context)?.controller.headerMode?.value =
           RefreshStatus.idle;
@@ -644,7 +577,6 @@ mixin IndicatorStateMixin<T extends StatefulWidget, V> on State<T> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     //1.3.7: here need to careful after add asSliver builder
     disposeListener();
     super.dispose();
@@ -652,14 +584,12 @@ mixin IndicatorStateMixin<T extends StatefulWidget, V> on State<T> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     _updateListener();
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(T oldWidget) {
-    // TODO: implement didUpdateWidget
     // needn't to update _headerMode,because it's state will never change
     // 1.3.7: here need to careful after add asSliver builder
     _updateListener();
