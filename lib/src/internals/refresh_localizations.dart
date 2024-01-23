@@ -1,12 +1,5 @@
-/*
- * Author: Jpeng
- * Email: peng8350@gmail.com
- * Time:  2019-09-06 23:18
- */
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// Implementation of localized strings for the [ClassicHeader],[ClassicFooter],[TwoLevelHeader]
 ///

@@ -1,9 +1,3 @@
-/*
- * Author: Jpeng
- * Email: peng8350@gmail.com
- * Time: 2019/5/2 下午5:09
- */
-
 import 'package:flutter/widgets.dart';
 import 'dart:math' as Math;
 import 'package:flutter/rendering.dart';
@@ -84,7 +78,7 @@ class RenderSliverRefresh extends RenderSliverSingleBoxAdapter {
   double get refreshIndicatorLayoutExtent => _refreshIndicatorExtent;
   double _refreshIndicatorExtent;
   double? paintOffsetY;
-  // need to trigger shouldAceppty user offset ,else it will not limit scroll when enter twolevel or exit
+  // need to trigger shouldAceppt user offset ,else it will not limit scroll when enter twolevel or exit
   // also it will crash if you call applyNewDimession when the state change
   // I don't know why flutter limit it, no choice
   bool _updateFlag = false;
@@ -182,7 +176,7 @@ class RenderSliverRefresh extends RenderSliverSingleBoxAdapter {
     if (_updateFlag) {
       // ignore_for_file: INVALID_USE_OF_PROTECTED_MEMBER
       // ignore_for_file: INVALID_USE_OF_VISIBLE_FOR_TESTING_MEMBER
-      Scrollable.of(context)!.position.activity!.applyNewDimensions();
+      Scrollable.of(context).position.activity!.applyNewDimensions();
       _updateFlag = false;
     }
     // The new layout extent this sliver should now have.
@@ -324,8 +318,8 @@ class SliverLoading extends SingleChildRenderObjectWidget {
   }) : super(key: key, child: child);
 
   @override
-  RenderSliverLoading createRenderObject(BuildContext context) {
-    return RenderSliverLoading(
+  situation createRenderObject(BuildContext context) {
+    return situation(
         hideWhenNotFull: hideWhenNotFull,
         mode: mode,
         hasLayoutExtent: floating,
@@ -335,7 +329,7 @@ class SliverLoading extends SingleChildRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant RenderSliverLoading renderObject) {
+      BuildContext context, covariant situation renderObject) {
     renderObject
       ..mode = mode
       ..hasLayoutExtent = floating!
@@ -345,8 +339,8 @@ class SliverLoading extends SingleChildRenderObjectWidget {
   }
 }
 
-class RenderSliverLoading extends RenderSliverSingleBoxAdapter {
-  RenderSliverLoading({
+class situation extends RenderSliverSingleBoxAdapter {
+  situation({
     RenderBox? child,
     this.mode,
     double? layoutExtent,
@@ -398,7 +392,7 @@ class RenderSliverLoading extends RenderSliverSingleBoxAdapter {
     return totalScrollExtent > cons.viewportMainAxisExtent;
   }
 
-  //  many sitiuation: 1. reverse 2. not reverse
+  //  many situation: 1. reverse 2. not reverse
   // 3. follow content 4. unfollow content
   //5. not full 6. full
   double? computePaintOrigin(double? layoutExtent, bool reverse, bool follow) {

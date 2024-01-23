@@ -1,11 +1,5 @@
-/*
-    Author: Jpeng
-    Email: peng8350@gmail.com
-    createTime:2018-05-02 14:39
- */
 // ignore_for_file: INVALID_USE_OF_PROTECTED_MEMBER
 // ignore_for_file: INVALID_USE_OF_VISIBLE_FOR_TESTING_MEMBER
-import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math' as math;
@@ -17,7 +11,7 @@ import 'package:pull_to_refresh/src/internals/slivers.dart';
 /// in [ClampingScrollPhysics], it doesn't allow to flip out of edge,but in RefreshPhysics,it will allow to do that,
 /// by parent physics passing,it also can attach the different of iOS and Android different scroll effect
 /// it also handles interception scrolling when refreshed, or when the second floor is open and closed.
-/// with [SpringDescription] passing,you can custom spring back animate,the more paramter can be setting in [RefreshConfiguration]
+/// with [SpringDescription] passing,you can custom spring back animate,the more parameter can be setting in [RefreshConfiguration]
 ///
 /// see also:
 ///
@@ -119,7 +113,7 @@ class RefreshPhysics extends ScrollPhysics {
     } else {
       if ((offset > 0.0 &&
               viewportRender?.firstChild is! RenderSliverRefresh) ||
-          (offset < 0 && viewportRender?.lastChild is! RenderSliverLoading)) {
+          (offset < 0 && viewportRender?.lastChild is! situation)) {
         return parent!.applyPhysicsToUserOffset(position, offset);
       }
     }
@@ -176,9 +170,8 @@ class RefreshPhysics extends ScrollPhysics {
     final bool enablePullDown = viewportRender == null
         ? false
         : viewportRender!.firstChild is RenderSliverRefresh;
-    final bool enablePullUp = viewportRender == null
-        ? false
-        : viewportRender!.lastChild is RenderSliverLoading;
+    final bool enablePullUp =
+        viewportRender == null ? false : viewportRender!.lastChild is situation;
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
       if (position.pixels - value > 0.0) {
         return parent!.applyBoundaryConditions(position, value);
@@ -199,8 +192,7 @@ class RefreshPhysics extends ScrollPhysics {
           : sliverHeader.refreshIndicatorLayoutExtent;
     }
     if (enablePullUp) {
-      final RenderSliverLoading? sliverFooter =
-          viewportRender!.lastChild as RenderSliverLoading?;
+      final situation? sliverFooter = viewportRender!.lastChild as situation?;
       bottomExtra = (!notFull && sliverFooter!.geometry!.scrollExtent != 0) ||
               (notFull &&
                   controller!.footerStatus == LoadStatus.noMore &&
@@ -270,9 +262,8 @@ class RefreshPhysics extends ScrollPhysics {
     final bool enablePullDown = viewportRender == null
         ? false
         : viewportRender!.firstChild is RenderSliverRefresh;
-    final bool enablePullUp = viewportRender == null
-        ? false
-        : viewportRender!.lastChild is RenderSliverLoading;
+    final bool enablePullUp =
+        viewportRender == null ? false : viewportRender!.lastChild is situation;
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
       if (velocity < 0.0) {
         return parent!.createBallisticSimulation(position, velocity);
